@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.gallery.GalleryFragment">
+    tools:context=".ui.usersetting.UserSettingFragment">
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/userSettingTitleTV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="32dp"
         android:fontFamily="@font/harmattan"
         android:text="Add/Edit User"
         android:textSize="24sp"
@@ -23,12 +23,13 @@
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/harmattan"
         android:text="Name"
         android:textSize="24sp"
-        app:layout_constraintTop_toBottomOf="@+id/spinner2"
-        tools:layout_editor_absoluteX="16dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/userSettingUserSp" />
 
     <EditText
         android:id="@+id/userSettingNameET"
@@ -126,7 +127,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="32dp"
         android:backgroundTint="#00BCD4"
-        android:text="Button"
+        android:text="Submit"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -141,10 +142,10 @@
         android:text="Choose User"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+        app:layout_constraintTop_toBottomOf="@+id/userSettingTitleTV" />
 
     <Spinner
-        android:id="@+id/spinner2"
+        android:id="@+id/userSettingUserSp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
