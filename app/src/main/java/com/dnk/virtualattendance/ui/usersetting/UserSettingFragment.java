@@ -1,10 +1,12 @@
 package com.dnk.virtualattendance.ui.usersetting;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,11 +17,14 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.dnk.virtualattendance.HomeActivity;
 import com.dnk.virtualattendance.R;
@@ -42,6 +47,9 @@ public class UserSettingFragment extends Fragment {
     private List<RoleModel> roleList;
     private String newUserUid;
 
+    private UserModel selectedUser;
+    private RoleModel selectedRole;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         mAuth = FirebaseAuth.getInstance();
@@ -51,8 +59,7 @@ public class UserSettingFragment extends Fragment {
 
         binding = FragmentUserSettingBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-
-
+      
         dbManager = new DBManager(this.getContext());
         dbManager.open();
         userList = dbManager.getAllUsers();
@@ -68,8 +75,53 @@ public class UserSettingFragment extends Fragment {
         final Spinner userSettingRoleSp = binding.userSettingRoleSp;
         getRoleSpinnerAdapter().observe(getViewLifecycleOwner(), userSettingRoleSp::setAdapter);
 
+        userSettingUserSp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                UserModel selectedUser = (UserModel) adapterView.getItemAtPosition(i);
+
+                EditText userSettingNameET = binding.userSettingNameET;
+                EditText userSettingEmailET = binding.userSettingEmailET;
+                EditText userSettingPasswordET = binding.userSettingPasswordET;
+
+                if (!selectedUser.getId().equals("-1")) {
+                    userSettingNameET.setText(selectedUser.getName());
+                    userSettingEmailET.setText(selectedUser.getEmail());
+                    userSettingPasswordET.setText("");
+                } else {
+                    // Clear fields for new user creation
+                    userSettingNameET.setText("");
+                    userSettingEmailET.setText("");
+                    userSettingPasswordET.setText("");
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                selectedUser = null;
+            }
+        });
+
+        userSettingRoleSp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                RoleModel selectedRole = (RoleModel) adapterView.getItemAtPosition(i);
+
+                // Optionally, attach the role if it has been selected
+                if (selectedRole != null && selectedUser != null) {
+                    selectedUser.setRole(selectedRole.getId());
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                selectedRole = null;
+            }
+        });
+
         Button userSettingSubmitBtn = binding.userSettingSubmitBtn;
         userSettingSubmitBtn.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("DetachAndAttachSameFragment")
             @Override
             public void onClick(View view) {
                 dbManager = new DBManager(view.getContext());
@@ -93,11 +145,13 @@ public class UserSettingFragment extends Fragment {
                     newUser.setEmail(userSettingEmailET.getText().toString());
                     newUser.setRole(selectedRole.getId());
                     dbManager.addUser(newUser);
+                  
                     mAuth.createUserWithEmailAndPassword(userSettingEmailET.getText().toString(), userSettingPasswordET.getText().toString())
                             .addOnCompleteListener(task -> {
                                 if (task.isSuccessful()) {
                                     // New user created successfully
                                     FirebaseUser user = mAuth.getCurrentUser();
+                                    assert user != null;
                                     Log.d("CurrentUserReg", "Success creating user: " + user.getUid());
                                 } else {
                                     // Error creating user
@@ -108,10 +162,11 @@ public class UserSettingFragment extends Fragment {
 
                 dbManager.close();
 
-                // Reload Fragment
-                FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.nav_host_fragment_content_home, new UserSettingFragment());
-                transaction.commit();
+                // Reload the fragment
+                NavController navController = NavHostFragment.findNavController(UserSettingFragment.this);
+                // Refresh this fragment (remove from back stack and navigate again)
+                navController.popBackStack(R.id.nav_user_setting, true);
+                navController.navigate(R.id.nav_user_setting);
             }
         });
 
