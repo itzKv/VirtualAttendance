@@ -1,6 +1,7 @@
 package com.dnk.virtualattendance.ui.rolesetting;
 
 import android.app.Activity;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -74,6 +75,15 @@ public class RoleSettingFragment extends Fragment {
         EditText roleSettingSpareTimeTP = binding.roleSettingSpareTimeTP;
 
         getRoleSpinnerAdapter().observe(getViewLifecycleOwner(), roleSettingRoleSp::setAdapter);
+
+        roleSettingStartTimeTP.setFocusable(false); // Mencegah keyboard popup
+        roleSettingStartTimeTP.setOnClickListener(v -> showTimePickerDialog(roleSettingStartTimeTP));
+
+        roleSettingEndTimeTP.setFocusable(false); // Mencegah keyboard popup
+        roleSettingEndTimeTP.setOnClickListener(v -> showTimePickerDialog(roleSettingEndTimeTP));
+
+        roleSettingSpareTimeTP.setFocusable(false); // Mencegah keyboard popup
+        roleSettingSpareTimeTP.setOnClickListener(v -> showTimePickerDialog(roleSettingSpareTimeTP));
 
         Button roleSettingSubmitBtn = binding.roleSettingSubmitBtn;
         roleSettingSubmitBtn.setOnClickListener(new View.OnClickListener() {
@@ -178,4 +188,24 @@ public class RoleSettingFragment extends Fragment {
             return adapter;
         });
     }
+
+    private void showTimePickerDialog(EditText timeEditText) {
+        final int[] currentHour = {12};
+        final int[] currentMinute = {0};
+
+        TimePickerDialog timePickerDialog = new TimePickerDialog(
+                getContext(),
+                (view, hourOfDay, minute) -> {
+                    // Formatkan waktu dan set ke EditText
+                    String formattedTime = String.format("%02d:%02d", hourOfDay, minute);
+                    timeEditText.setText(formattedTime);
+                },
+                currentHour[0], // Jam awal
+                currentMinute[0], // Menit awal
+                true // Format 24-jam
+        );
+
+        timePickerDialog.show(); // Tampilkan TimePickerDialog
+    }
+
 }
