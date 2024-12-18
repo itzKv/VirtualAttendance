@@ -1,9 +1,11 @@
 package com.dnk.virtualattendance;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
 
@@ -11,6 +13,7 @@ import com.dnk.virtualattendance.database.DBManager;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 
+import androidx.core.view.GravityCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -37,27 +40,35 @@ public class HomeActivity extends AppCompatActivity {
 
         DrawerLayout drawer = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
-
-        mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_role_setting, R.id.nav_user_setting)
-                .setOpenableLayout(drawer)
-                .build();
-
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_home);
-        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
-        NavigationUI.setupWithNavController(navigationView, navController);
 
         // Retrieve authenticated user's role
         String userRole = getAuthUserRole();
 
-        // Modify menu based on role
-        updateNavigationMenu(userRole, navigationView);
-
         if ("Admin".equals(userRole)) {
+            mAppBarConfiguration = new AppBarConfiguration.Builder(
+                    R.id.nav_role_setting, R.id.nav_user_setting)
+                    .setOpenableLayout(drawer)
+                    .build();
+
             navController.navigate(R.id.nav_role_setting);
         } else {
+            mAppBarConfiguration = new AppBarConfiguration.Builder(
+                    R.id.nav_attendance_machine, R.id.nav_attendance_summary)
+                    .setOpenableLayout(drawer)
+                    .build();
+
             navController.navigate(R.id.nav_attendance_machine);
         }
+
+        updateNavigationMenu(userRole, navigationView);
+
+        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
+        NavigationUI.setupWithNavController(navigationView, navController);
+
+        drawer.closeDrawer(GravityCompat.START);
+
+
     }
 
 
@@ -73,6 +84,15 @@ public class HomeActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_home);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_settings) {
+            logoutUser();
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
     }
     private String getAuthUserRole() {
         // Get the email of the currently authenticated user
@@ -91,6 +111,13 @@ public class HomeActivity extends AppCompatActivity {
 
         return null; // Return null if email is not available
     }
+    private String getCurrentUserEmail() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            return user.getEmail(); // Return the email of the authenticated user
+        }
+        return null; // Return null if no user is authenticated
+    }
     private void updateNavigationMenu(String role, NavigationView navigationView) {
         Menu menu = navigationView.getMenu();
 
@@ -98,13 +125,13 @@ public class HomeActivity extends AppCompatActivity {
         menu.clear();
 
         if ("Admin".equals(role)) {
-            // Add Admin-specific menu items
+            // Menu untuk Admin
             menu.add(Menu.NONE, R.id.nav_role_setting, Menu.NONE, R.string.menu_role_setting)
                     .setIcon(R.drawable.ic_menu_camera);
             menu.add(Menu.NONE, R.id.nav_user_setting, Menu.NONE, R.string.menu_user_setting)
                     .setIcon(R.drawable.ic_menu_gallery);
         } else {
-            // Add items for non-Admin roles
+            // Menu untuk non-Admin
             menu.add(Menu.NONE, R.id.nav_attendance_machine, Menu.NONE, R.string.menu_attendance_machine)
                     .setIcon(R.drawable.ic_menu_camera);
             menu.add(Menu.NONE, R.id.nav_attendance_summary, Menu.NONE, R.string.menu_attendance_summary)
@@ -114,12 +141,15 @@ public class HomeActivity extends AppCompatActivity {
         // Refresh the menu
         navigationView.invalidate();
     }
-    private String getCurrentUserEmail() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            return user.getEmail(); // Return the email of the authenticated user
-        }
-        return null; // Return null if no user is authenticated
+    private void logoutUser() {
+        // Sign out the user from Firebase
+        FirebaseAuth.getInstance().signOut();
+
+        // Redirect the user to the login screen or main screen
+        Intent intent = new Intent(HomeActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish();  // Finish the current activity so the user can't go back to it
     }
+
 
 }
