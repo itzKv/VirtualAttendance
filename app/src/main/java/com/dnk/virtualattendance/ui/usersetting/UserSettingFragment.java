@@ -23,8 +23,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.dnk.virtualattendance.HomeActivity;
 import com.dnk.virtualattendance.R;
-import com.dnk.virtualattendance.database.RoleDBManager;
-import com.dnk.virtualattendance.database.UserDBManager;
+import com.dnk.virtualattendance.database.DBManager;
 import com.dnk.virtualattendance.databinding.FragmentUserSettingBinding;
 import com.dnk.virtualattendance.model.RoleModel;
 import com.dnk.virtualattendance.model.UserModel;
@@ -38,9 +37,8 @@ import java.util.List;
 public class UserSettingFragment extends Fragment {
     private FirebaseAuth mAuth;
     private FragmentUserSettingBinding binding;
-    private UserDBManager userDBManager;
     private List<UserModel> userList;
-    private RoleDBManager roleDBManager;
+    private DBManager dbManager;
     private List<RoleModel> roleList;
     private String newUserUid;
 
@@ -55,17 +53,11 @@ public class UserSettingFragment extends Fragment {
         View root = binding.getRoot();
 
 
-        userDBManager = new UserDBManager(this.getContext());
-        userDBManager.open();
-        userList = userDBManager.getAllUsers();
-        Log.d("UserSettingFragment", "User list size: " + userList.size());
-        userDBManager.close();
-
-
-        roleDBManager = new RoleDBManager(this.getContext());
-        roleDBManager.open();
-        roleList = roleDBManager.getAllRoles();
-        roleDBManager.close();
+        dbManager = new DBManager(this.getContext());
+        dbManager.open();
+        userList = dbManager.getAllUsers();
+        roleList = dbManager.getAllRoles();
+        dbManager.close();
 
         final TextView textView = binding.userSettingTitleTV;
         userSettingViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
@@ -80,8 +72,8 @@ public class UserSettingFragment extends Fragment {
         userSettingSubmitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                userDBManager = new UserDBManager(view.getContext());
-                userDBManager.open();
+                dbManager = new DBManager(view.getContext());
+                dbManager.open();
 
                 UserModel selectedUser = (UserModel) userSettingUserSp.getSelectedItem();
                 RoleModel selectedRole = (RoleModel) userSettingRoleSp.getSelectedItem();
@@ -95,12 +87,12 @@ public class UserSettingFragment extends Fragment {
                     newUser.setId(selectedUser.getId());
                     newUser.setName(userSettingNameET.getText().toString());
                     newUser.setRole(selectedRole.getId());
-                    userDBManager.updateUser(newUser);
+                    dbManager.updateUser(newUser);
                 } else {
                     newUser.setName(userSettingNameET.getText().toString());
                     newUser.setEmail(userSettingEmailET.getText().toString());
                     newUser.setRole(selectedRole.getId());
-                    userDBManager.addUser(newUser);
+                    dbManager.addUser(newUser);
                     mAuth.createUserWithEmailAndPassword(userSettingEmailET.getText().toString(), userSettingPasswordET.getText().toString())
                             .addOnCompleteListener(task -> {
                                 if (task.isSuccessful()) {
@@ -114,7 +106,7 @@ public class UserSettingFragment extends Fragment {
                             });
                 }
 
-                userDBManager.close();
+                dbManager.close();
 
                 // Reload Fragment
                 FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
