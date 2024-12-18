@@ -1,16 +1,16 @@
-package com.dnk.virtualattendance.ui.rolesetting;
+package com.dnk.virtualattendance.ui.attendancesummary;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class RoleSettingViewModel extends ViewModel {
+public class AttendanceSummaryViewModel extends ViewModel {
 
     private final MutableLiveData<String> mText;
 
-    public RoleSettingViewModel() {
+    public AttendanceSummaryViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("Add/Edit Role");
+        mText.setValue("Attendance Summary");
     }
 
     public LiveData<String> getText() {

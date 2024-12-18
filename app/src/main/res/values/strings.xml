@@ -10,5 +10,6 @@
 
     <string name="menu_role_setting">Role Setting</string>
     <string name="menu_user_setting">User Setting</string>
-    <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_attendance_machine">Attendance Machine</string>
+    <string name="menu_attendance_summary">Attendance Summary</string>
 </resources>
