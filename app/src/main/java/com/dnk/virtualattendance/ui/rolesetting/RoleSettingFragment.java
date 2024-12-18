@@ -20,11 +20,14 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.dnk.virtualattendance.BuildConfig;
 import com.dnk.virtualattendance.R;
@@ -113,14 +116,16 @@ public class RoleSettingFragment extends Fragment {
                     newRole.setWorkingLocation(roleSettingLocationET.getText().toString());
                     newRole.setSalary(roleSettingSalaryNum.getText().toString());
                     roleDBManager.addRole(newRole);
+                    Log.d("Role DB Inserted", "Successfully inserted data to RoleDB");
                 }
 
                 roleDBManager.close();
 
-                // Reload Fragment
-                FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.nav_host_fragment_content_home, new RoleSettingFragment());
-                transaction.commit();
+                // Reload the fragment
+                NavController navController = NavHostFragment.findNavController(RoleSettingFragment.this);
+                // Refresh this fragment (remove from back stack and navigate again)
+                navController.popBackStack(R.id.nav_role_setting, true);
+                navController.navigate(R.id.nav_role_setting);
             }
         });
 
@@ -155,6 +160,7 @@ public class RoleSettingFragment extends Fragment {
         super.onDestroyView();
         binding = null;
     }
+
 
     @Override
     public void onCreate(@NonNull Bundle savedInstanceState) {
