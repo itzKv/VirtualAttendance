@@ -6,9 +6,10 @@
     <string name="nav_header_title">Android Studio</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Logout</string>
 
     <string name="menu_role_setting">Role Setting</string>
     <string name="menu_user_setting">User Setting</string>
-    <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_attendance_machine">Attendance Machine</string>
+    <string name="menu_attendance_summary">Attendance Summary</string>
 </resources>

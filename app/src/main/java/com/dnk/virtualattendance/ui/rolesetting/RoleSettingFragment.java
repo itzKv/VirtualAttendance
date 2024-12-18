@@ -18,7 +18,6 @@ import android.widget.TextView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -31,10 +30,9 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.dnk.virtualattendance.BuildConfig;
 import com.dnk.virtualattendance.R;
-import com.dnk.virtualattendance.database.RoleDBManager;
+import com.dnk.virtualattendance.database.DBManager;
 import com.dnk.virtualattendance.databinding.FragmentRoleSettingBinding;
 import com.dnk.virtualattendance.model.RoleModel;
-import com.dnk.virtualattendance.ui.usersetting.UserSettingFragment;
 import com.google.android.gms.common.api.Status;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
@@ -43,13 +41,12 @@ import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class RoleSettingFragment extends Fragment {
     private static final int AUTOCOMPLETE_REQUEST_CODE = 1;
     private FragmentRoleSettingBinding binding;
-    private RoleDBManager roleDBManager;
+    private DBManager dbManager;
     private List<RoleModel> roleList;
     private ActivityResultLauncher<Intent> autocompleteLauncher;
 
@@ -61,10 +58,10 @@ public class RoleSettingFragment extends Fragment {
         binding = FragmentRoleSettingBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        roleDBManager = new RoleDBManager(this.getContext());
-        roleDBManager.open();
-        roleList = roleDBManager.getAllRoles();
-        roleDBManager.close();
+        dbManager = new DBManager(this.getContext());
+        dbManager.open();
+        roleList = dbManager.getAllRoles();
+        dbManager.close();
 
         final TextView titleTV = binding.roleSettingTitleTV;
         roleSettingViewModel.getText().observe(getViewLifecycleOwner(), titleTV::setText);
@@ -92,8 +89,8 @@ public class RoleSettingFragment extends Fragment {
         roleSettingSubmitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                roleDBManager = new RoleDBManager(view.getContext());
-                roleDBManager.open();
+                dbManager = new DBManager(view.getContext());
+                dbManager.open();
 
                 RoleModel selectedRole = (RoleModel) roleSettingRoleSp.getSelectedItem();
 
@@ -107,7 +104,7 @@ public class RoleSettingFragment extends Fragment {
                     newRole.setWorkingSpareTime(roleSettingSpareTimeTP.getText().toString());
                     newRole.setWorkingLocation(roleSettingLocationET.getText().toString());
                     newRole.setSalary(roleSettingSalaryNum.getText().toString());
-                    roleDBManager.updateRole(newRole);
+                    dbManager.updateRole(newRole);
                 } else {
                     newRole.setRoleName(roleSettingNameSp.getText().toString());
                     newRole.setWorkingStartTime(roleSettingStartTimeTP.getText().toString());
@@ -115,11 +112,10 @@ public class RoleSettingFragment extends Fragment {
                     newRole.setWorkingSpareTime(roleSettingSpareTimeTP.getText().toString());
                     newRole.setWorkingLocation(roleSettingLocationET.getText().toString());
                     newRole.setSalary(roleSettingSalaryNum.getText().toString());
-                    roleDBManager.addRole(newRole);
-                    Log.d("Role DB Inserted", "Successfully inserted data to RoleDB");
+                    dbManager.addRole(newRole);
                 }
 
-                roleDBManager.close();
+                dbManager.close();
 
                 // Reload the fragment
                 NavController navController = NavHostFragment.findNavController(RoleSettingFragment.this);
