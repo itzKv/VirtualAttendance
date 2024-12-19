@@ -40,7 +40,7 @@ android {
 dependencies {
 
     implementation(libs.appcompat)
-    implementation(libs.material)
+    implementation("com.google.android.material:material:1.7.0")
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation(libs.lifecycle.livedata.ktx)
@@ -52,10 +52,14 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.android.gms:play-services-maps:19.0.0")
-    implementation ("com.google.android.libraries.places:places:3.2.0")
+    implementation("com.google.android.libraries.places:places:3.2.0")
+    implementation("com.github.prolificinteractive:material-calendarview:2.0.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
+    implementation ("com.android.support:support-compat:27.0.2")
+    implementation ("androidx.core:core:1.13.0")
 }
 
 secrets {
