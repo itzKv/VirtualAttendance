@@ -98,7 +98,6 @@ public class HomeActivity extends AppCompatActivity {
         // Get the email of the currently authenticated user
         String email = getCurrentUserEmail();
         Log.d("UserRole", "Email: " + email); // Log the retrieved email
-
         if (email != null) {
             // Query SQLite database to find the user's role
             DBManager dbManager = new DBManager(this);
