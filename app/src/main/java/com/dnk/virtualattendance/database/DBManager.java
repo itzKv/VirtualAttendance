@@ -4,21 +4,22 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.dnk.virtualattendance.model.AttendanceModel;
 import com.dnk.virtualattendance.model.RoleModel;
 import com.dnk.virtualattendance.model.UserModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DBManager {
+public class DBManager extends DBHelper {
 
     private DBHelper dbHelper;
     private SQLiteDatabase database;
 
     public DBManager(Context context) {
+        super(context);
         dbHelper = new DBHelper(context);
     }
 
@@ -267,4 +268,67 @@ public class DBManager {
 
         return roleName;
     }
+
+    // === ATTENDANCE OPERATIONS ===
+    public List<AttendanceModel> getAttendanceListForUser(String userId) {
+        List<AttendanceModel> attendanceList = new ArrayList<>();
+
+        // Query the attendance table based on the user_id
+        String[] columns = new String[]{
+                DBHelper.ATTENDANCE_FIELD_ID,
+                DBHelper.ATTENDANCE_FIELD_USER_ID,
+                DBHelper.ATTENDANCE_FIELD_DATE,
+                DBHelper.ATTENDANCE_FIELD_STATUS,
+                DBHelper.ATTENDANCE_FIELD_CHECKIN_TIME,
+                DBHelper.ATTENDANCE_FIELD_CHECKOUT_TIME
+        };
+
+        Cursor cursor = database.query(
+                DBHelper.TABLE_ATTENDANCE,
+                columns,
+                DBHelper.ATTENDANCE_FIELD_USER_ID + " = ?",
+                new String[]{userId},
+                null,
+                null,
+                DBHelper.ATTENDANCE_FIELD_DATE + " DESC" // Order by most recent
+        );
+
+        if (cursor.moveToFirst()) {
+            do {
+                AttendanceModel attendance = new AttendanceModel();
+                attendance.setId(cursor.getInt(0));
+                attendance.setUserId(cursor.getString(1));
+                attendance.setDate(cursor.getString(2));  // Attendance date (e.g., "2024-11-05")
+                attendance.setStatus(cursor.getString(3));  // Status (e.g., "present" or "absent")
+                attendance.setCheckin(cursor.getString(1));
+
+                attendanceList.add(attendance);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return attendanceList;
+    }
+
+    // Method to insert dummy attendance data for testing
+    public void insertDummyData() {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        // Insert sample attendance records
+        ContentValues values = new ContentValues();
+
+        // Insert 5 days of data (attended and absent)
+        for (int i = 1; i <= 5; i++) {
+            values.put(DBHelper.ATTENDANCE_FIELD_USER_ID, "1");
+            values.put(DBHelper.ATTENDANCE_FIELD_DATE, "2024-11-" + String.format("%02d", i));
+            values.put(DBHelper.ATTENDANCE_FIELD_STATUS, (i % 2 == 0) ? "attended" : "absent");
+            values.put(DBHelper.ATTENDANCE_FIELD_CHECKIN_TIME, "08:00 AM");
+            values.put(DBHelper.ATTENDANCE_FIELD_CHECKOUT_TIME, "05:00 PM");
+
+            db.insert(DBHelper.TABLE_ATTENDANCE, null, values);
+        }
+
+        db.close();
+    }
+
 }
