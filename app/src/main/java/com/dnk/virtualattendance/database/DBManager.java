@@ -148,6 +148,20 @@ public class DBManager extends DBHelper {
         return null;
     }
 
+    public boolean isRoleUsed(int roleId) {
+        Cursor cursor = database.rawQuery(
+                "SELECT COUNT(*) FROM " + DBHelper.TABLE_USER +
+                        " WHERE " + DBHelper.USER_FIELD_ROLE + " = ?",
+                new String[] {String.valueOf(roleId)}
+        );
+
+        cursor.moveToFirst();
+        int count = cursor.getInt(0);
+        cursor.close();
+
+        return count > 0; // If count > 0, the role is in use.
+    }
+
     // === USER OPERATIONS ===
 
     public void addUser(UserModel user) {
@@ -273,12 +287,14 @@ public class DBManager extends DBHelper {
     public List<AttendanceModel> getAttendanceListForUser(String userId) {
         List<AttendanceModel> attendanceList = new ArrayList<>();
 
+        Log.d("Database", "Querying attendance for user: " + userId);
+
         // Query the attendance table based on the user_id
         String[] columns = new String[]{
                 DBHelper.ATTENDANCE_FIELD_ID,
                 DBHelper.ATTENDANCE_FIELD_USER_ID,
                 DBHelper.ATTENDANCE_FIELD_DATE,
-                DBHelper.ATTENDANCE_FIELD_STATUS,
+                DBHelper.ATTENDANCE_FIELD_IS_ATTENDED,
                 DBHelper.ATTENDANCE_FIELD_CHECKIN_TIME,
                 DBHelper.ATTENDANCE_FIELD_CHECKOUT_TIME
         };
@@ -293,14 +309,19 @@ public class DBManager extends DBHelper {
                 DBHelper.ATTENDANCE_FIELD_DATE + " DESC" // Order by most recent
         );
 
+        Log.d("Database", "Query returned " + cursor.getCount() + " rows");
+
         if (cursor.moveToFirst()) {
             do {
                 AttendanceModel attendance = new AttendanceModel();
                 attendance.setId(cursor.getInt(0));
                 attendance.setUserId(cursor.getString(1));
                 attendance.setDate(cursor.getString(2));  // Attendance date (e.g., "2024-11-05")
-                attendance.setStatus(cursor.getString(3));  // Status (e.g., "present" or "absent")
-                attendance.setCheckin(cursor.getString(1));
+                int attendanceStatus = cursor.getInt(3);
+                // Convert the integer to a boolean
+                attendance.setIsAttended(attendanceStatus);
+                attendance.setCheckin(cursor.getString(4));
+                attendance.setCheckout(cursor.getString(5));
 
                 attendanceList.add(attendance);
             } while (cursor.moveToNext());
@@ -310,25 +331,72 @@ public class DBManager extends DBHelper {
         return attendanceList;
     }
 
-    // Method to insert dummy attendance data for testing
-    public void insertDummyData() {
-        SQLiteDatabase db = this.getWritableDatabase();
+    public List<AttendanceModel> fetchAttendanceData(String date) {
+        List<AttendanceModel> attendanceList = new ArrayList<>();
 
-        // Insert sample attendance records
-        ContentValues values = new ContentValues();
+        // Query to fetch the attendance data for the selected date
+        Cursor cursor = database.query(
+                DBHelper.TABLE_ATTENDANCE,
+                null, // Select all columns
+                DBHelper.ATTENDANCE_FIELD_DATE + " = ?", // Filter by date
+                new String[]{date}, // Arguments for the filter
+                null, null, null);
 
-        // Insert 5 days of data (attended and absent)
-        for (int i = 1; i <= 5; i++) {
-            values.put(DBHelper.ATTENDANCE_FIELD_USER_ID, "1");
-            values.put(DBHelper.ATTENDANCE_FIELD_DATE, "2024-11-" + String.format("%02d", i));
-            values.put(DBHelper.ATTENDANCE_FIELD_STATUS, (i % 2 == 0) ? "attended" : "absent");
-            values.put(DBHelper.ATTENDANCE_FIELD_CHECKIN_TIME, "08:00 AM");
-            values.put(DBHelper.ATTENDANCE_FIELD_CHECKOUT_TIME, "05:00 PM");
+        // Iterate through the cursor and populate the list
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                AttendanceModel attendance = new AttendanceModel();
+                attendance.setUserId(cursor.getString(0));
+                attendance.setDate(cursor.getString(1));
+                attendance.setCheckin(cursor.getString(2));
+                attendance.setCheckout(cursor.getString(3));
+                attendance.setIsAttended(cursor.getInt(4));
 
-            db.insert(DBHelper.TABLE_ATTENDANCE, null, values);
+                attendanceList.add(attendance);
+            } while (cursor.moveToNext());
+            cursor.close();
         }
 
-        db.close();
+        return attendanceList;
+    }
+
+    // Method to insert dummy attendance data for testing
+    public void insertDummyData() {
+        Cursor cursor = database.query(
+                DBHelper.TABLE_ATTENDANCE,
+                null,
+                DBHelper.ATTENDANCE_FIELD_USER_ID + " = ?",
+                new String[]{"3"},
+                null,
+                null,
+                null
+        );
+
+        // First clear existing data for user 3
+        database.delete(DBHelper.TABLE_ATTENDANCE,
+                DBHelper.ATTENDANCE_FIELD_USER_ID + " = ?",
+                new String[]{"3"});
+
+        if (cursor.getCount() == 0) {  // Only insert if no data exists
+            for (int i = 1; i <= 12; i++) {
+                ContentValues values = new ContentValues();
+                values.put(DBHelper.ATTENDANCE_FIELD_USER_ID, "3");
+                values.put(DBHelper.ATTENDANCE_FIELD_DATE, "2024-12-" + String.format("%02d", i));
+                values.put(DBHelper.ATTENDANCE_FIELD_IS_ATTENDED, (i % 2 == 0) ? 1 : 0);
+                values.put(DBHelper.ATTENDANCE_FIELD_CHECKIN_TIME, "08:00 AM");
+                values.put(DBHelper.ATTENDANCE_FIELD_CHECKOUT_TIME, "05:00 PM");
+                database.insert(DBHelper.TABLE_ATTENDANCE, null, values);
+            }
+        }
+        ContentValues values = new ContentValues();
+        values.put(DBHelper.ATTENDANCE_FIELD_USER_ID, "3");
+        values.put(DBHelper.ATTENDANCE_FIELD_DATE, "2024-11-12");
+        values.put(DBHelper.ATTENDANCE_FIELD_IS_ATTENDED,  1);
+        values.put(DBHelper.ATTENDANCE_FIELD_CHECKIN_TIME, "08:00 AM");
+        values.put(DBHelper.ATTENDANCE_FIELD_CHECKOUT_TIME, "05:00 PM");
+        database.insert(DBHelper.TABLE_ATTENDANCE, null, values);
+
+        cursor.close();
     }
 
 }

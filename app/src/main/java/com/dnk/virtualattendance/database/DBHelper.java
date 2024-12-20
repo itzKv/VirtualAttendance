@@ -9,7 +9,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     // Database Info
     private static final String DATABASE_NAME = "VirtualAttendance.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 4;
 
     // Table Roles
     public static final String TABLE_ROLE = "roles";
@@ -33,7 +33,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String ATTENDANCE_FIELD_ID = "id";
     public static final String ATTENDANCE_FIELD_USER_ID = "user_id";
     public static final String ATTENDANCE_FIELD_DATE = "date";
-    public static final String ATTENDANCE_FIELD_STATUS = "status"; // Present, Absent, etc.
+    public static final String ATTENDANCE_FIELD_IS_ATTENDED = "is_attended"; // True, False
     public static final String ATTENDANCE_FIELD_CHECKIN_TIME = "checkin_time";
     public static final String ATTENDANCE_FIELD_CHECKOUT_TIME = "checkout_time";
 
@@ -70,7 +70,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 + ATTENDANCE_FIELD_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + ATTENDANCE_FIELD_USER_ID + " INTEGER, "
                 + ATTENDANCE_FIELD_DATE + " TEXT, "
-                + ATTENDANCE_FIELD_STATUS + " TEXT, "
+                + ATTENDANCE_FIELD_IS_ATTENDED + " TEXT, "
                 + ATTENDANCE_FIELD_CHECKIN_TIME + " TEXT, "
                 + ATTENDANCE_FIELD_CHECKOUT_TIME + " TEXT, "
                 + "FOREIGN KEY(" + ATTENDANCE_FIELD_USER_ID + ") REFERENCES " + TABLE_USER + "(" + USER_FIELD_ID + ")"
@@ -88,28 +88,4 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    // Insert dummy data for testing
-    public void insertDummyDataAttendance() {
-        SQLiteDatabase db = this.getWritableDatabase(); // Access writable database
-
-        String[] dates = {
-                "2024-11-01", "2024-11-02", "2024-11-05", "2024-11-10", "2024-11-15"
-        };
-        String[] statuses = {
-                "present", "absent", "present", "absent", "present"
-        };
-
-        for (int i = 0; i < dates.length; i++) {
-            ContentValues values = new ContentValues();
-            values.put(DBHelper.ATTENDANCE_FIELD_USER_ID, "1");  // Assuming user_id is 1
-            values.put(DBHelper.ATTENDANCE_FIELD_DATE, dates[i]);
-            values.put(DBHelper.ATTENDANCE_FIELD_STATUS, statuses[i]);
-            values.put(DBHelper.ATTENDANCE_FIELD_CHECKIN_TIME, "08:00 AM");
-            values.put(DBHelper.ATTENDANCE_FIELD_CHECKOUT_TIME, "05:00 PM");
-
-            db.insert(DBHelper.TABLE_ATTENDANCE, null, values);
-        }
-
-        db.close();
-    }
 }

@@ -4,7 +4,7 @@ public class AttendanceModel {
     private int id;
     private String userId;
     private String date;  // Attendance date in string format (e.g., "2024-11-05")
-    private String status;  // Status (e.g., "present" or "absent")
+    private int isAttended;  // Status (1 = True || 0 = False)
     private String checkin;
     private String checkout;
 
@@ -33,18 +33,26 @@ public class AttendanceModel {
         this.date = date;
     }
 
-    public String getStatus() {
-        return status;
+    public int getIsAttended() {
+        return isAttended;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setIsAttended(int isAttended) {
+        this.isAttended = isAttended;
     }
 
-    public void setCheckin(String date) {
+    public String getCheckin() {
+        return checkin;
+    }
+
+    public String getCheckout() {
+        return checkout;
+    }
+
+    public void setCheckin(String checkin) {
         this.checkin = checkin;
     }
-    public void setCheckout(String date) {
+    public void setCheckout(String checkout) {
         this.checkout = checkout;
     }
 }
