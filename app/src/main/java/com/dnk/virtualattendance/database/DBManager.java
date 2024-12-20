@@ -4,9 +4,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.dnk.virtualattendance.model.AttendanceModel;
 import com.dnk.virtualattendance.model.RoleModel;
 import com.dnk.virtualattendance.model.UserModel;
 
@@ -43,7 +43,6 @@ public class DBManager {
         values.put(DBHelper.ROLE_FIELD_SALARY, role.getSalary());
         database.insert(DBHelper.TABLE_ROLE, null, values);
     }
-
     public List<RoleModel> getAllRoles() {
         List<RoleModel> roleList = new ArrayList<>();
         String[] columns = new String[]{
@@ -83,7 +82,6 @@ public class DBManager {
         cursor.close();
         return roleList;
     }
-
     public int updateRole(RoleModel role) {
         ContentValues values = new ContentValues();
         values.put(DBHelper.ROLE_FIELD_ROLE_NAME, role.getRoleName());
@@ -100,7 +98,6 @@ public class DBManager {
                 new String[]{String.valueOf(role.getId())}
         );
     }
-
     public void deleteRole(RoleModel role) {
         database.delete(
                 DBHelper.TABLE_ROLE,
@@ -108,7 +105,6 @@ public class DBManager {
                 new String[]{String.valueOf(role.getId())}
         );
     }
-
     public RoleModel getRoleById(int id) {
         String[] columns = new String[]{
                 DBHelper.ROLE_FIELD_ID,
@@ -156,7 +152,6 @@ public class DBManager {
         values.put(DBHelper.USER_FIELD_ROLE, user.getRole());
         database.insert(DBHelper.TABLE_USER, null, values);
     }
-
     public List<UserModel> getAllUsers() {
         List<UserModel> userList = new ArrayList<>();
         String[] columns = new String[]{
@@ -179,7 +174,7 @@ public class DBManager {
         if (cursor.moveToFirst()) {
             do {
                 UserModel user = new UserModel();
-                user.setId(cursor.getString(0));
+                user.setId(cursor.getInt(0));
                 user.setName(cursor.getString(1));
                 user.setEmail(cursor.getString(2));
                 user.setRole(cursor.getInt(3));
@@ -190,7 +185,6 @@ public class DBManager {
         cursor.close();
         return userList;
     }
-
     public int updateUser(UserModel user) {
         ContentValues values = new ContentValues();
         values.put(DBHelper.USER_FIELD_NAME, user.getName());
@@ -204,7 +198,6 @@ public class DBManager {
                 new String[]{String.valueOf(user.getId())}
         );
     }
-
     public void deleteUser(UserModel user) {
         database.delete(
                 DBHelper.TABLE_USER,
@@ -212,7 +205,6 @@ public class DBManager {
                 new String[]{String.valueOf(user.getId())}
         );
     }
-
     public UserModel getUserById(String id) {
         String[] columns = new String[]{
                 DBHelper.USER_FIELD_ID,
@@ -233,7 +225,7 @@ public class DBManager {
 
         if (cursor.moveToFirst()) {
             UserModel user = new UserModel();
-            user.setId(cursor.getString(0));
+            user.setId(cursor.getInt(0));
             user.setName(cursor.getString(1));
             user.setEmail(cursor.getString(2));
             user.setRole(cursor.getInt(3));
@@ -244,27 +236,76 @@ public class DBManager {
         cursor.close();
         return null;
     }
-
-    public String getRoleNameByEmail(String email) {
-        String roleName = null;
+    public RoleModel getRoleByEmail(String email) {
+        RoleModel role = null;
         SQLiteDatabase db = this.dbHelper.getReadableDatabase();
 
         // Query untuk join tabel users dan roles
-        String query = "SELECT " + DBHelper.TABLE_ROLE + "." + DBHelper.ROLE_FIELD_ROLE_NAME + " " +
+        String query = "SELECT " + DBHelper.TABLE_ROLE + ".* " +
                 "FROM " + DBHelper.TABLE_USER + " " +
                 "INNER JOIN " + DBHelper.TABLE_ROLE + " ON " + DBHelper.TABLE_USER + "." + DBHelper.USER_FIELD_ROLE + " = " + DBHelper.TABLE_ROLE + "." + DBHelper.ROLE_FIELD_ID + " " +
                 "WHERE " + DBHelper.TABLE_USER + "." + DBHelper.USER_FIELD_EMAIL + " = ?";
 
-        Log.d("DBManager", "Query: " + query);
-
         Cursor cursor = db.rawQuery(query, new String[]{email});
+        Log.d("UserRole", "Cursor: " + cursor.moveToFirst());
 
         if (cursor.moveToFirst()) {
-            roleName = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.ROLE_FIELD_ROLE_NAME));
+            int id = cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.ROLE_FIELD_ID));
+            String roleName = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.ROLE_FIELD_ROLE_NAME));
+            String roleWorkingLocation = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.ROLE_FIELD_WORKING_LOCATION));
+            String roleWorkingStartTime = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.ROLE_FIELD_WORKING_START_TIME));
+            String roleWorkingEndTime = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.ROLE_FIELD_WORKING_END_TIME));
+            String roleWorkingSpareTime = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.ROLE_FIELD_WORKING_SPARE_TIME));
+            String roleSalary = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.ROLE_FIELD_SALARY));
+            role = new RoleModel(id, roleName, roleWorkingStartTime, roleWorkingEndTime, roleWorkingSpareTime, roleWorkingLocation, roleSalary); // Buat objek Role
         }
         cursor.close();
         db.close();
 
-        return roleName;
+        return role;
     }
+
+    // === ATTENDANCE OPERATIONS ===
+
+    public AttendanceModel getAttendanceRecord(int userId, String todayDate) {
+        AttendanceModel attendanceRecord = null;
+        SQLiteDatabase db = this.dbHelper.getReadableDatabase();
+        String query = "SELECT * FROM " + DBHelper.TABLE_ATTENDANCE + " WHERE " + DBHelper.ATTENDANCE_FIELD_USER_ID + " = ? AND " + DBHelper.ATTENDANCE_FIELD_DATE + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId), todayDate});
+        if (cursor.moveToFirst()){
+            attendanceRecord = new AttendanceModel(
+                    cursor.getInt(cursor.getColumnIndexOrThrow(
+                            DBHelper.ATTENDANCE_FIELD_USER_ID)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(
+                            DBHelper.ATTENDANCE_FIELD_DATE)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(
+                            DBHelper.ATTENDANCE_FIELD_START_TIME)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(
+                            DBHelper.ATTENDANCE_FIELD_END_TIME))
+            );
+            cursor.close();
+            db.close();
+        }
+        return attendanceRecord;
+    }
+
+    public void startAttendanceRecord(AttendanceModel attendanceRecord){
+        ContentValues values = new ContentValues();
+        values.put(DBHelper.ATTENDANCE_FIELD_USER_ID, attendanceRecord.getUser_id());
+        values.put(DBHelper.ATTENDANCE_FIELD_DATE, attendanceRecord.getDate());
+        values.put(DBHelper.ATTENDANCE_FIELD_START_TIME, attendanceRecord.getAttendStartTime());
+        database.insert(DBHelper.TABLE_ATTENDANCE, null, values);
+    }
+
+    public void closeAttendanceRecord(AttendanceModel attendanceRecord){
+        ContentValues values = new ContentValues();
+        values.put(DBHelper.ATTENDANCE_FIELD_END_TIME, attendanceRecord.getAttendCloseTime());
+        database.update(
+                DBHelper.TABLE_ATTENDANCE,
+                values,
+                DBHelper.ATTENDANCE_FIELD_USER_ID + " = ? AND " + DBHelper.ATTENDANCE_FIELD_DATE + " = ?",
+                new String[]{String.valueOf(attendanceRecord.getUser_id()), attendanceRecord.getDate()}
+        );
+    }
+
 }

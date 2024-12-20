@@ -1,7 +1,7 @@
 package com.dnk.virtualattendance.model;
 
 public class UserModel {
-    private String id;
+    private int id;
     private String name;
     private String email;
     private String password;
@@ -9,7 +9,7 @@ public class UserModel {
 
     public UserModel(){}
 
-    public UserModel(String id, String name, int role, String email, String password) {
+    public UserModel(int id, String name, int role, String email, String password) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -25,11 +25,11 @@ public class UserModel {
         this.password = password;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 

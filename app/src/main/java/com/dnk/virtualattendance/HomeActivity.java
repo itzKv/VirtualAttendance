@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.Menu;
 
 import com.dnk.virtualattendance.database.DBManager;
+import com.dnk.virtualattendance.model.RoleModel;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 
@@ -25,10 +26,14 @@ import com.dnk.virtualattendance.databinding.ActivityHomeBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.List;
+
 public class HomeActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityHomeBinding binding;
+    private RoleModel userRole;
+    private DBManager dbManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,9 +48,11 @@ public class HomeActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_home);
 
         // Retrieve authenticated user's role
-        String userRole = getAuthUserRole();
+        userRole = getAuthUserRole();
+//        userRole = new RoleModel(1, "Admin", "", "", "", "", "");
 
-        if ("Admin".equals(userRole)) {
+        assert userRole != null;
+        if ("Admin".equals(userRole.getRoleName())) {
             mAppBarConfiguration = new AppBarConfiguration.Builder(
                     R.id.nav_role_setting, R.id.nav_user_setting)
                     .setOpenableLayout(drawer)
@@ -61,14 +68,12 @@ public class HomeActivity extends AppCompatActivity {
             navController.navigate(R.id.nav_attendance_machine);
         }
 
-        updateNavigationMenu(userRole, navigationView);
+        updateNavigationMenu(userRole.getRoleName(), navigationView);
 
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
         drawer.closeDrawer(GravityCompat.START);
-
-
     }
 
 
@@ -94,16 +99,16 @@ public class HomeActivity extends AppCompatActivity {
             return super.onOptionsItemSelected(item);
         }
     }
-    private String getAuthUserRole() {
+    private RoleModel getAuthUserRole() {
         // Get the email of the currently authenticated user
         String email = getCurrentUserEmail();
-        Log.d("UserRole", "Email: " + email); // Log the retrieved email
+        Log.d("UserRoleActivity", "Email: " + email); // Log the retrieved email
 
         if (email != null) {
             // Query SQLite database to find the user's role
             DBManager dbManager = new DBManager(this);
             dbManager.open();
-            String role = dbManager.getRoleNameByEmail(email);
+            RoleModel role = dbManager.getRoleByEmail(email);
             dbManager.close();
             Log.d("UserRole", "Role: " + role); // Log the retrieved role)
             return role; // Return the retrieved role
@@ -149,6 +154,10 @@ public class HomeActivity extends AppCompatActivity {
         Intent intent = new Intent(HomeActivity.this, MainActivity.class);
         startActivity(intent);
         finish();  // Finish the current activity so the user can't go back to it
+    }
+
+    public RoleModel getUserRole(){
+        return this.userRole;
     }
 
 

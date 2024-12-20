@@ -84,7 +84,7 @@ public class UserSettingFragment extends Fragment {
                 EditText userSettingEmailET = binding.userSettingEmailET;
                 EditText userSettingPasswordET = binding.userSettingPasswordET;
 
-                if (!selectedUser.getId().equals("-1")) {
+                if (selectedUser.getId() != -1) {
                     userSettingNameET.setText(selectedUser.getName());
                     userSettingEmailET.setText(selectedUser.getEmail());
                     userSettingPasswordET.setText("");
@@ -135,7 +135,7 @@ public class UserSettingFragment extends Fragment {
 
                 UserModel newUser = new UserModel();
 
-                if (!selectedUser.getId().equals("-1")) {
+                if (selectedUser.getId() != -1) {
                     newUser.setId(selectedUser.getId());
                     newUser.setName(userSettingNameET.getText().toString());
                     newUser.setRole(selectedRole.getId());
@@ -182,7 +182,7 @@ public class UserSettingFragment extends Fragment {
     public LiveData<SpinnerAdapter> getUserSpinnerAdapter(){
         UserModel initUser = new UserModel();
         initUser.setName("Choose this to add new user");
-        initUser.setId("-1");
+        initUser.setId(-1);
 
         List<UserModel> userSpinnerList = new ArrayList<>();
         userSpinnerList.add(initUser);
