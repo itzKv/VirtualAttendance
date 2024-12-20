@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.dnk.virtualattendance.database.DBManager;
@@ -33,6 +34,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private TextView userNameTV;
     private TextView userEmailTV;
+    private ImageView imageView;
 
 
     @Override
@@ -54,12 +56,15 @@ public class HomeActivity extends AppCompatActivity {
 
         userNameTV = headerView.findViewById(R.id.userNameTV);
         userEmailTV = headerView.findViewById(R.id.userEmailTV);
+        imageView = headerView.findViewById(R.id.imageView);
 
         userNameTV.setText(getCurrentUserName());
         userEmailTV.setText(getCurrentUserEmail());
 
+        setRandomImage();
+
         // Retrieve authenticated user's role
-        String userRole = getAuthUserRole();
+        String userRole = "Admin";
 
         if ("Admin".equals(userRole)) {
             mAppBarConfiguration = new AppBarConfiguration.Builder(
@@ -110,6 +115,21 @@ public class HomeActivity extends AppCompatActivity {
             return super.onOptionsItemSelected(item);
         }
     }
+
+    private void setRandomImage() {
+        // Define a list of drawable resources for random images
+        int[] imageResources = {
+                R.drawable.image_3,
+                R.drawable.image_4
+        };
+
+        // Generate a random index
+        int randomIndex = (int) (Math.random() * imageResources.length);
+
+        // Set the random image to the ImageView
+        imageView.setImageResource(imageResources[randomIndex]);
+    }
+
     private String getAuthUserRole() {
         // Get the email of the currently authenticated user
         String email = getCurrentUserEmail();
@@ -150,13 +170,13 @@ public class HomeActivity extends AppCompatActivity {
         if ("Admin".equals(role)) {
             // Menu untuk Admin
             menu.add(Menu.NONE, R.id.nav_role_setting, Menu.NONE, R.string.menu_role_setting)
-                    .setIcon(R.drawable.ic_menu_camera);
+                    .setIcon(R.drawable.ic_role);
             menu.add(Menu.NONE, R.id.nav_user_setting, Menu.NONE, R.string.menu_user_setting)
-                    .setIcon(R.drawable.ic_menu_gallery);
+                    .setIcon(R.drawable.ic_person);
         } else {
             // Menu untuk non-Admin
             menu.add(Menu.NONE, R.id.nav_attendance_machine, Menu.NONE, R.string.menu_attendance_machine)
-                    .setIcon(R.drawable.ic_menu_camera);
+                    .setIcon(R.drawable.ic_calendar);
             menu.add(Menu.NONE, R.id.nav_attendance_summary, Menu.NONE, R.string.menu_attendance_summary)
                     .setIcon(R.drawable.ic_menu_gallery);
         }
