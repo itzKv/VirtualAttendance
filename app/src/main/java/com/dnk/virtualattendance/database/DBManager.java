@@ -13,12 +13,13 @@ import com.dnk.virtualattendance.model.UserModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DBManager {
+public class DBManager extends DBHelper {
 
     private DBHelper dbHelper;
     private SQLiteDatabase database;
 
     public DBManager(Context context) {
+        super(context);
         dbHelper = new DBHelper(context);
     }
 
@@ -141,6 +142,20 @@ public class DBManager {
 
         cursor.close();
         return null;
+    }
+
+    public boolean isRoleUsed(int roleId) {
+        Cursor cursor = database.rawQuery(
+                "SELECT COUNT(*) FROM " + DBHelper.TABLE_USER +
+                        " WHERE " + DBHelper.USER_FIELD_ROLE + " = ?",
+                new String[] {String.valueOf(roleId)}
+        );
+
+        cursor.moveToFirst();
+        int count = cursor.getInt(0);
+        cursor.close();
+
+        return count > 0; // If count > 0, the role is in use.
     }
 
     // === USER OPERATIONS ===
@@ -266,7 +281,6 @@ public class DBManager {
     }
 
     // === ATTENDANCE OPERATIONS ===
-
     public AttendanceModel getAttendanceRecord(int userId, String todayDate) {
         AttendanceModel attendanceRecord = null;
         SQLiteDatabase db = this.dbHelper.getReadableDatabase();
@@ -307,5 +321,78 @@ public class DBManager {
                 new String[]{String.valueOf(attendanceRecord.getUser_id()), attendanceRecord.getDate()}
         );
     }
+  
+    public List<AttendanceModel> getAttendanceListForUser(String userId) {
+        List<AttendanceModel> attendanceList = new ArrayList<>();
 
+        Log.d("Database", "Querying attendance for user: " + userId);
+
+        // Query the attendance table based on the user_id
+        String[] columns = new String[]{
+                DBHelper.ATTENDANCE_FIELD_USER_ID,
+                DBHelper.ATTENDANCE_FIELD_DATE,
+                DBHelper.ATTENDANCE_FIELD_START_TIME,
+                DBHelper.ATTENDANCE_FIELD_END_TIME
+        };
+
+        Cursor cursor = database.query(
+                DBHelper.TABLE_ATTENDANCE,
+                columns,
+                DBHelper.ATTENDANCE_FIELD_USER_ID + " = ?",
+                new String[]{userId},
+                null,
+                null,
+                DBHelper.ATTENDANCE_FIELD_DATE + " DESC" // Order by most recent
+        );
+
+        Log.d("Database", "Query returned " + cursor.getCount() + " rows");
+
+        if (cursor.moveToFirst()) {
+            do {
+                AttendanceModel attendance = new AttendanceModel();
+                attendance.setId(cursor.getInt(0));
+                attendance.setUserId(cursor.getString(1));
+                attendance.setDate(cursor.getString(2));  // Attendance date (e.g., "2024-11-05")
+                int attendanceStatus = cursor.getInt(3);
+                // Convert the integer to a boolean
+                attendance.setCheckin(cursor.getString(4));
+                attendance.setCheckout(cursor.getString(5));
+                attendance.setIsAttended(cursor.getString(5));
+
+                attendanceList.add(attendance);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return attendanceList;
+    }
+
+    public List<AttendanceModel> fetchAttendanceData(String date) {
+        List<AttendanceModel> attendanceList = new ArrayList<>();
+
+        // Query to fetch the attendance data for the selected date
+        Cursor cursor = database.query(
+                DBHelper.TABLE_ATTENDANCE,
+                null, // Select all columns
+                DBHelper.ATTENDANCE_FIELD_DATE + " = ?", // Filter by date
+                new String[]{date}, // Arguments for the filter
+                null, null, null);
+
+        // Iterate through the cursor and populate the list
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                AttendanceModel attendance = new AttendanceModel();
+                attendance.setUserId(cursor.getString(0));
+                attendance.setDate(cursor.getString(1));
+                attendance.setCheckin(cursor.getString(2));
+                attendance.setCheckout(cursor.getString(3));
+                attendance.setIsAttended(cursor.getString(3));
+
+                attendanceList.add(attendance);
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+
+        return attendanceList;
+    }
 }

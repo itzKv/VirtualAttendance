@@ -1,6 +1,7 @@
 package com.dnk.virtualattendance.ui.usersetting;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -35,6 +36,7 @@ import com.dnk.virtualattendance.model.UserModel;
 import com.dnk.virtualattendance.ui.rolesetting.RoleSettingFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,24 +77,54 @@ public class UserSettingFragment extends Fragment {
         final Spinner userSettingRoleSp = binding.userSettingRoleSp;
         getRoleSpinnerAdapter().observe(getViewLifecycleOwner(), userSettingRoleSp::setAdapter);
 
+        Button userSettingDeleteBtn = binding.userSettingDeleteBtn;
+
+
         userSettingUserSp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                UserModel selectedUser = (UserModel) adapterView.getItemAtPosition(i);
+                selectedUser = (UserModel) adapterView.getItemAtPosition(i);
 
                 EditText userSettingNameET = binding.userSettingNameET;
                 EditText userSettingEmailET = binding.userSettingEmailET;
                 EditText userSettingPasswordET = binding.userSettingPasswordET;
 
                 if (selectedUser.getId() != -1) {
+                    // Autofill the Name and Role
                     userSettingNameET.setText(selectedUser.getName());
-                    userSettingEmailET.setText(selectedUser.getEmail());
+
+                    RoleModel selectedRole = null;
+                    for (RoleModel role: roleList) {
+                        if (role.getId() == (selectedUser.getRole())) {
+                            Log.d("SelectedUserRole", "Role: " + selectedUser.getRole());
+                            Log.d("RoleList", "Role: " + role.getId());
+                            selectedRole = role;
+                            break;
+                        }
+                    }
+
+                    if (selectedRole != null) {
+                        // Set the role in the role spinner
+                        ArrayAdapter<RoleModel> roleAdapter = (ArrayAdapter<RoleModel>) userSettingRoleSp.getAdapter();
+                        int rolePosition = roleAdapter.getPosition(selectedRole);
+                        userSettingRoleSp.setSelection(rolePosition);
+                    }
+
+                    // Empty email and password for security
+                    userSettingEmailET.setText("");
                     userSettingPasswordET.setText("");
                 } else {
                     // Clear fields for new user creation
                     userSettingNameET.setText("");
                     userSettingEmailET.setText("");
                     userSettingPasswordET.setText("");
+                }
+
+                // Display delete button
+                if (i != 0) {  // Assuming position 0 is the default or empty state
+                    userSettingDeleteBtn.setVisibility(View.VISIBLE);  // Show the delete button
+                } else {
+                    userSettingDeleteBtn.setVisibility(View.GONE);  // Hide the delete button
                 }
             }
 
@@ -124,8 +156,6 @@ public class UserSettingFragment extends Fragment {
             @SuppressLint("DetachAndAttachSameFragment")
             @Override
             public void onClick(View view) {
-                dbManager = new DBManager(view.getContext());
-                dbManager.open();
 
                 UserModel selectedUser = (UserModel) userSettingUserSp.getSelectedItem();
                 RoleModel selectedRole = (RoleModel) userSettingRoleSp.getSelectedItem();
@@ -133,7 +163,35 @@ public class UserSettingFragment extends Fragment {
                 EditText userSettingEmailET = binding.userSettingEmailET;
                 EditText userSettingPasswordET = binding.userSettingPasswordET;
 
+                String name = userSettingNameET.getText().toString();
+                String email = userSettingEmailET.getText().toString();
+                String password = userSettingPasswordET.getText().toString();
+
+                // Validation
+                if (name.isEmpty()) {
+                    Toast.makeText(getContext(), "Name cannot be empty", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (selectedRole == null) {
+                    Toast.makeText(getContext(), "Cannot create user if there is no role", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (email.isEmpty() || !isValidEmail(email)) {
+                    Toast.makeText(getContext(), "Please enter a valid email", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (!password.isEmpty() && password.length() < 6) {
+                    Toast.makeText(getContext(), "Password must be at least 6 characters", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 UserModel newUser = new UserModel();
+
+                dbManager = new DBManager(view.getContext());
+                dbManager.open();
 
                 if (selectedUser.getId() != -1) {
                     newUser.setId(selectedUser.getId());
@@ -161,17 +219,57 @@ public class UserSettingFragment extends Fragment {
                 }
 
                 dbManager.close();
-
                 // Reload the fragment
-                NavController navController = NavHostFragment.findNavController(UserSettingFragment.this);
-                // Refresh this fragment (remove from back stack and navigate again)
-                navController.popBackStack(R.id.nav_user_setting, true);
-                navController.navigate(R.id.nav_user_setting);
+                reloadFragment();
+
             }
+        });
+
+        // Handle Delete button click
+        userSettingDeleteBtn.setOnClickListener(v -> {
+            showDeleteConfirmationDialog();
         });
 
         return root;
     }
+
+    // Method to validate email format
+    private boolean isValidEmail(String email) {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
+
+    private void showDeleteConfirmationDialog() {
+        // Create an AlertDialog to confirm the deletion
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Delete Role")
+                .setMessage("Are you sure you want to delete this role?")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    deleteSelectedUser();
+                    dialog.dismiss();
+                })
+                .setNegativeButton("No", null)
+                .show();
+    }
+
+    private void deleteSelectedUser() {
+
+        // Locally
+        dbManager.open();
+        dbManager.deleteUser(selectedUser);
+        dbManager.close();
+
+        Toast.makeText(getContext(), "User " +  selectedUser.getName() + " deleted", Toast.LENGTH_SHORT).show();
+        reloadFragment();
+    }
+
+
+
+    private void reloadFragment() {
+        NavController navController = NavHostFragment.findNavController(this);
+        navController.popBackStack(R.id.nav_user_setting, true);
+        navController.navigate(R.id.nav_user_setting);
+    }
+
 
     @Override
     public void onDestroyView() {

@@ -1,5 +1,6 @@
 package com.dnk.virtualattendance.database;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -8,7 +9,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     // Database Info
     private static final String DATABASE_NAME = "VirtualAttendance.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
     // Table Roles
     public static final String TABLE_ROLE = "roles";
@@ -60,7 +61,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 + USER_FIELD_ROLE + " INTEGER "
                 + ")";
         db.execSQL(createUsersTable);
-
+      
         // Query to create attendances table
         String createAttendancesTable = "CREATE TABLE " + TABLE_ATTENDANCE + "("
                 + ATTENDANCE_FIELD_DATE + " TEXT, "
@@ -81,4 +82,5 @@ public class DBHelper extends SQLiteOpenHelper {
         // Recreate tables
         onCreate(db);
     }
+
 }

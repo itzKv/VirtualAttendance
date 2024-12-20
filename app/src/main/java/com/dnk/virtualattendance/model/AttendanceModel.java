@@ -5,6 +5,7 @@ public class AttendanceModel {
     private String attendCloseTime;
     private int user_id;
     private String date;
+    private int isAttended;  // Status (1 = True || 0 = False)
 
     public AttendanceModel(int user_id, String date, String attendStartTime, String attendCloseTime) {
         this.attendStartTime = attendStartTime;
@@ -27,6 +28,14 @@ public class AttendanceModel {
 
     public void setAttendCloseTime(String attendCloseTime) {
         this.attendCloseTime = attendCloseTime;
+    }
+  
+    public void setIsAttended(String attendCloseTime) {
+        this.isAttended = attendCloseTime != null;
+    }
+  
+    public void getIsAttended() {
+        return this.isAttended;
     }
 
     public int getUser_id() {
