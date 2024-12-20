@@ -12,6 +12,7 @@ public class AttendanceModel {
         this.attendCloseTime = attendCloseTime;
         this.user_id = user_id;
         this.date = date;
+        this.isAttended = attendCloseTime != null ? 1 : 0;
     }
 
     public String getAttendStartTime() {
@@ -31,10 +32,10 @@ public class AttendanceModel {
     }
   
     public void setIsAttended(String attendCloseTime) {
-        this.isAttended = attendCloseTime != null;
+        this.isAttended = attendCloseTime != null ? 1:0;
     }
   
-    public void getIsAttended() {
+    public int getIsAttended() {
         return this.isAttended;
     }
 

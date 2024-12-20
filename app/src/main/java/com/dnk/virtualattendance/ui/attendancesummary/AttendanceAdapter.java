@@ -86,8 +86,8 @@ public class AttendanceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 attendanceHolder.yearTV.setText("N/A");
             }
 
-            attendanceHolder.checkinTV.setText("Check-in: " + attendance.getCheckin());
-            attendanceHolder.checkoutTV.setText("Check-out: " + attendance.getCheckout());
+            attendanceHolder.checkinTV.setText("Check-in: " + attendance.getAttendStartTime());
+            attendanceHolder.checkoutTV.setText("Check-out: " + attendance.getAttendCloseTime());
             attendanceHolder.statusTV.setText(attendance.getIsAttended() == 1 ? "Attended" : "Absent");
             attendanceHolder.statusTV.setTextColor(holder.itemView.getContext().getColor(
                     attendance.getIsAttended() == 1 ?

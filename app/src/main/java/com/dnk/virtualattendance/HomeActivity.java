@@ -124,8 +124,8 @@ public class HomeActivity extends AppCompatActivity {
     private void setRandomImage() {
         // Define a list of drawable resources for random images
         int[] imageResources = {
-                R.drawable.image_3,
-                R.drawable.image_4
+                R.drawable.profile1,
+                R.drawable.profile2
         };
 
         // Generate a random index

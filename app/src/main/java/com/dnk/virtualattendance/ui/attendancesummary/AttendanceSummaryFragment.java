@@ -68,7 +68,6 @@ public class AttendanceSummaryFragment extends Fragment {
 
         dbManager = new DBManager(getContext());
         dbManager.open();
-        dbManager.insertDummyData();
         attendanceList = dbManager.getAttendanceListForUser("3");
         Log.d("AttendanceListSize", Integer.toString(attendanceList.size()));
         setupRecyclerView();

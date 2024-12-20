@@ -349,16 +349,11 @@ public class DBManager extends DBHelper {
 
         if (cursor.moveToFirst()) {
             do {
-                AttendanceModel attendance = new AttendanceModel();
-                attendance.setId(cursor.getInt(0));
-                attendance.setUserId(cursor.getString(1));
-                attendance.setDate(cursor.getString(2));  // Attendance date (e.g., "2024-11-05")
-                int attendanceStatus = cursor.getInt(3);
-                // Convert the integer to a boolean
-                attendance.setCheckin(cursor.getString(4));
-                attendance.setCheckout(cursor.getString(5));
-                attendance.setIsAttended(cursor.getString(5));
-
+                int user_id = Integer.parseInt(cursor.getString(1));
+                String date = cursor.getString(2);
+                String checkIn = cursor.getString(4);
+                String checkOut = cursor.getString(5);
+                AttendanceModel attendance = new AttendanceModel(user_id, date, checkIn,  checkOut);
                 attendanceList.add(attendance);
             } while (cursor.moveToNext());
         }
@@ -381,13 +376,13 @@ public class DBManager extends DBHelper {
         // Iterate through the cursor and populate the list
         if (cursor != null && cursor.moveToFirst()) {
             do {
-                AttendanceModel attendance = new AttendanceModel();
-                attendance.setUserId(cursor.getString(0));
-                attendance.setDate(cursor.getString(1));
-                attendance.setCheckin(cursor.getString(2));
-                attendance.setCheckout(cursor.getString(3));
-                attendance.setIsAttended(cursor.getString(3));
 
+
+                int user_id = Integer.parseInt(cursor.getString(0));
+                String dateNow = cursor.getString(1);
+                String checkIn = cursor.getString(2);
+                String checkOut = cursor.getString(3);
+                AttendanceModel attendance = new AttendanceModel(user_id, dateNow, checkIn,  checkOut);
                 attendanceList.add(attendance);
             } while (cursor.moveToNext());
             cursor.close();
