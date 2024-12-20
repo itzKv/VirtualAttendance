@@ -257,7 +257,9 @@ public class UserSettingFragment extends Fragment {
         dbManager.open();
         dbManager.deleteUser(selectedUser);
         dbManager.close();
+
         Toast.makeText(getContext(), "User " +  selectedUser.getName() + " deleted", Toast.LENGTH_SHORT).show();
+        reloadFragment();
     }
 
 
