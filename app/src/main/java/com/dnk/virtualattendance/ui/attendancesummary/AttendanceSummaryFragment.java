@@ -17,6 +17,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.dnk.virtualattendance.HomeActivity;
+import com.dnk.virtualattendance.model.RoleModel;
 import com.dnk.virtualattendance.R;
 import com.dnk.virtualattendance.database.DBHelper;
 import com.dnk.virtualattendance.database.DBManager;
@@ -57,6 +59,12 @@ public class AttendanceSummaryFragment extends Fragment {
 
         binding = FragmentAttendanceSummaryBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
+        HomeActivity activity = (HomeActivity) getActivity();
+        if (activity != null) {
+            RoleModel userRole = activity.getUserRole();
+            Log.d("UserRoleFragment", "User Role: " + userRole.getRoleName());
+        }
 
         dbManager = new DBManager(getContext());
         dbManager.open();

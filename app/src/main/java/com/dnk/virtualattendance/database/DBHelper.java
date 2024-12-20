@@ -29,14 +29,11 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String USER_FIELD_ROLE = "role";
 
     // Table Attendance
-    public static final String TABLE_ATTENDANCE = "attendance";
-    public static final String ATTENDANCE_FIELD_ID = "id";
-    public static final String ATTENDANCE_FIELD_USER_ID = "user_id";
+    public static final String TABLE_ATTENDANCE = "attendances";
     public static final String ATTENDANCE_FIELD_DATE = "date";
-    public static final String ATTENDANCE_FIELD_IS_ATTENDED = "is_attended"; // True, False
-    public static final String ATTENDANCE_FIELD_CHECKIN_TIME = "checkin_time";
-    public static final String ATTENDANCE_FIELD_CHECKOUT_TIME = "checkout_time";
-
+    public static final String ATTENDANCE_FIELD_USER_ID = "user_id";
+    public static final String ATTENDANCE_FIELD_START_TIME = "start_time";
+    public static final String ATTENDANCE_FIELD_END_TIME = "end_time";
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -61,21 +58,19 @@ public class DBHelper extends SQLiteOpenHelper {
                 + USER_FIELD_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + USER_FIELD_NAME + " TEXT, "
                 + USER_FIELD_EMAIL + " TEXT, "
-                + USER_FIELD_ROLE + " TEXT "
+                + USER_FIELD_ROLE + " INTEGER "
                 + ")";
         db.execSQL(createUsersTable);
-
-        // Create Attendance Table
-        String createAttendanceTable = "CREATE TABLE " + TABLE_ATTENDANCE + "("
-                + ATTENDANCE_FIELD_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + ATTENDANCE_FIELD_USER_ID + " INTEGER, "
+      
+        // Query to create attendances table
+        String createAttendancesTable = "CREATE TABLE " + TABLE_ATTENDANCE + "("
                 + ATTENDANCE_FIELD_DATE + " TEXT, "
-                + ATTENDANCE_FIELD_IS_ATTENDED + " TEXT, "
-                + ATTENDANCE_FIELD_CHECKIN_TIME + " TEXT, "
-                + ATTENDANCE_FIELD_CHECKOUT_TIME + " TEXT, "
+                + ATTENDANCE_FIELD_USER_ID + " INTEGER, "
+                + ATTENDANCE_FIELD_START_TIME + " TEXT, "
+                + ATTENDANCE_FIELD_END_TIME + " TEXT, "
                 + "FOREIGN KEY(" + ATTENDANCE_FIELD_USER_ID + ") REFERENCES " + TABLE_USER + "(" + USER_FIELD_ID + ")"
                 + ")";
-        db.execSQL(createAttendanceTable);
+        db.execSQL(createAttendancesTable);
     }
 
     @Override

@@ -1,28 +1,49 @@
 package com.dnk.virtualattendance.model;
 
 public class AttendanceModel {
-    private int id;
-    private String userId;
-    private String date;  // Attendance date in string format (e.g., "2024-11-05")
+    private String attendStartTime;
+    private String attendCloseTime;
+    private int user_id;
+    private String date;
     private int isAttended;  // Status (1 = True || 0 = False)
-    private String checkin;
-    private String checkout;
 
-    // Getters and setters
-    public int getId() {
-        return id;
+    public AttendanceModel(int user_id, String date, String attendStartTime, String attendCloseTime) {
+        this.attendStartTime = attendStartTime;
+        this.attendCloseTime = attendCloseTime;
+        this.user_id = user_id;
+        this.date = date;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public String getAttendStartTime() {
+        return attendStartTime;
     }
 
-    public String getUserId() {
-        return userId;
+    public void setAttendStartTime(String attendStartTime) {
+        this.attendStartTime = attendStartTime;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public String getAttendCloseTime() {
+        return attendCloseTime;
+    }
+
+    public void setAttendCloseTime(String attendCloseTime) {
+        this.attendCloseTime = attendCloseTime;
+    }
+  
+    public void setIsAttended(String attendCloseTime) {
+        this.isAttended = attendCloseTime != null;
+    }
+  
+    public void getIsAttended() {
+        return this.isAttended;
+    }
+
+    public int getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(int user_id) {
+        this.user_id = user_id;
     }
 
     public String getDate() {
@@ -31,28 +52,5 @@ public class AttendanceModel {
 
     public void setDate(String date) {
         this.date = date;
-    }
-
-    public int getIsAttended() {
-        return isAttended;
-    }
-
-    public void setIsAttended(int isAttended) {
-        this.isAttended = isAttended;
-    }
-
-    public String getCheckin() {
-        return checkin;
-    }
-
-    public String getCheckout() {
-        return checkout;
-    }
-
-    public void setCheckin(String checkin) {
-        this.checkin = checkin;
-    }
-    public void setCheckout(String checkout) {
-        this.checkout = checkout;
     }
 }
