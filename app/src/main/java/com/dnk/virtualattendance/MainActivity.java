@@ -31,12 +31,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
+
+        // Check if user is authenticated
+        if (isUserAuthenticated()) {
+            // Redirect to HomeActivity
+            Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+            startActivity(intent);
+            finish(); // Prevent going back to the auth page
+            return;
+        }
         setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -49,6 +54,31 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String email = mainEmailET.getText().toString();
                 String password = mainPasswordET.getText().toString();
+                // Validate email and password
+                if (email.isEmpty()) {
+                    mainEmailET.setError("Email must be filled");
+                    mainEmailET.requestFocus();
+                    return;
+                }
+
+                if (!isValidEmail(email)) {
+                    mainEmailET.setError("Invalid email format");
+                    mainEmailET.requestFocus();
+                    return;
+                }
+
+                if (password.isEmpty()) {
+                    mainPasswordET.setError("Password cannot be empty");
+                    mainPasswordET.requestFocus();
+                    return;
+                }
+
+                if (password.length() < 6) {
+                    mainPasswordET.setError("Password must be at least 6 characters");
+                    mainPasswordET.requestFocus();
+                    return;
+                }
+
 
                 mAuth.signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
@@ -70,6 +100,30 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
             }
+
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Check if user is authenticated
+        if (isUserAuthenticated()) {
+            // Redirect to HomeActivity
+            Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+            startActivity(intent);
+            finish(); // Prevent returning to this activity
+        }
+    }
+
+
+    private boolean isUserAuthenticated() {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        return currentUser != null; // User is authenticated if currentUser is not null
+    }
+
+    private boolean isValidEmail(String email) {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 }
