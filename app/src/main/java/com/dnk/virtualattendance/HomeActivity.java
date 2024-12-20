@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
+import android.widget.TextView;
 
 import com.dnk.virtualattendance.database.DBManager;
 import com.google.android.material.snackbar.Snackbar;
@@ -30,6 +31,10 @@ public class HomeActivity extends AppCompatActivity {
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityHomeBinding binding;
 
+    private TextView userNameTV;
+    private TextView userEmailTV;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,6 +46,17 @@ public class HomeActivity extends AppCompatActivity {
         DrawerLayout drawer = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_home);
+
+        // Access the header view
+        View headerView = navigationView.getHeaderView(0);
+
+        Log.d("Binding", "Binding is: " + binding);
+
+        userNameTV = headerView.findViewById(R.id.userNameTV);
+        userEmailTV = headerView.findViewById(R.id.userEmailTV);
+
+        userNameTV.setText(getCurrentUserName());
+        userEmailTV.setText(getCurrentUserEmail());
 
         // Retrieve authenticated user's role
         String userRole = getAuthUserRole();
@@ -109,6 +125,14 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         return null; // Return null if email is not available
+    }
+
+    private String getCurrentUserName() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            return user.getDisplayName();
+        }
+        return "User";
     }
     private String getCurrentUserEmail() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
