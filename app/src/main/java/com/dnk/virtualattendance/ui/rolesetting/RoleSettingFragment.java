@@ -133,6 +133,45 @@ public class RoleSettingFragment extends Fragment {
         roleSettingSubmitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // Get the user inputs
+                String roleName = roleSettingNameSp.getText().toString().trim();
+                String startTime = roleSettingStartTimeTP.getText().toString().trim();
+                String endTime = roleSettingEndTimeTP.getText().toString().trim();
+                String spareTime = roleSettingSpareTimeTP.getText().toString().trim();
+                String location = roleSettingLocationET.getText().toString().trim();
+                String salary = roleSettingSalaryNum.getText().toString().trim();
+
+                // Validate inputs
+                if (roleName.isEmpty()) {
+                    Toast.makeText(getContext(), "Role name cannot be empty", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (!isValidTimeFormat(startTime)) {
+                    Toast.makeText(getContext(), "Invalid start time format (HH:mm)", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (!isValidTimeFormat(endTime)) {
+                    Toast.makeText(getContext(), "Invalid end time format (HH:mm)", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (!isValidTimeFormat(spareTime)) {
+                    Toast.makeText(getContext(), "Invalid spare time format (HH:mm)", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (location.isEmpty()) {
+                    Toast.makeText(getContext(), "Location cannot be empty", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (salary.isEmpty() || !isNumeric(salary)) {
+                    Toast.makeText(getContext(), "Salary must be a valid number", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 dbManager = new DBManager(view.getContext());
                 dbManager.open();
 
@@ -297,6 +336,20 @@ public class RoleSettingFragment extends Fragment {
         );
 
         timePickerDialog.show();
+    }
+
+    private boolean isValidTimeFormat(String time) {
+        // Simple time validation for HH:mm format
+        return time.matches("\\d{2}:\\d{2}");
+    }
+
+    private boolean isNumeric(String str) {
+        try {
+            Double.parseDouble(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
 }

@@ -156,8 +156,6 @@ public class UserSettingFragment extends Fragment {
             @SuppressLint("DetachAndAttachSameFragment")
             @Override
             public void onClick(View view) {
-                dbManager = new DBManager(view.getContext());
-                dbManager.open();
 
                 UserModel selectedUser = (UserModel) userSettingUserSp.getSelectedItem();
                 RoleModel selectedRole = (RoleModel) userSettingRoleSp.getSelectedItem();
@@ -165,7 +163,35 @@ public class UserSettingFragment extends Fragment {
                 EditText userSettingEmailET = binding.userSettingEmailET;
                 EditText userSettingPasswordET = binding.userSettingPasswordET;
 
+                String name = userSettingNameET.getText().toString();
+                String email = userSettingEmailET.getText().toString();
+                String password = userSettingPasswordET.getText().toString();
+
+                // Validation
+                if (name.isEmpty()) {
+                    Toast.makeText(getContext(), "Name cannot be empty", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (selectedRole == null) {
+                    Toast.makeText(getContext(), "Cannot create user if there is no role", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (email.isEmpty() || !isValidEmail(email)) {
+                    Toast.makeText(getContext(), "Please enter a valid email", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (!password.isEmpty() && password.length() < 6) {
+                    Toast.makeText(getContext(), "Password must be at least 6 characters", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 UserModel newUser = new UserModel();
+
+                dbManager = new DBManager(view.getContext());
+                dbManager.open();
 
                 if (!selectedUser.getId().equals("-1")) {
                     newUser.setId(selectedUser.getId());
@@ -205,6 +231,11 @@ public class UserSettingFragment extends Fragment {
         });
 
         return root;
+    }
+
+    // Method to validate email format
+    private boolean isValidEmail(String email) {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
     private void showDeleteConfirmationDialog() {
