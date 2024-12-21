@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient_background"
+    android:background="@color/cyan"
     tools:context=".ui.usersetting.UserSettingFragment">
 
     <TextView
@@ -14,8 +14,8 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
         android:fontFamily="@font/harmattan"
-        android:textColor="@color/white"
         android:text="Add/Edit User"
+        android:textColor="@color/black"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
@@ -28,8 +28,8 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/harmattan"
-        android:textColor="@color/white"
         android:text="Name"
+        android:textColor="@color/black"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/userSettingUserSp" />
@@ -42,9 +42,9 @@
         android:layout_marginEnd="16dp"
         android:ems="10"
         android:fontFamily="@font/harmattan"
-        android:textColor="@color/white"
         android:hint="Enter your name here"
         android:inputType="text"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView3" />
@@ -56,14 +56,14 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:ems="10"
-        android:fontFamily="@font/harmattan"
-        android:textColor="@color/white"
-        android:hint="Enter your email here"
         android:focusable="true"
+        android:fontFamily="@font/harmattan"
+        android:hint="Enter your email here"
         android:inputType="textEmailAddress"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+        app:layout_constraintTop_toBottomOf="@+id/userSettingEmailTV" />
 
     <EditText
         android:id="@+id/userSettingPasswordET"
@@ -73,35 +73,35 @@
         android:layout_marginEnd="16dp"
         android:ems="10"
         android:fontFamily="@font/harmattan"
-        android:textColor="@color/white"
         android:hint="Enter your password here"
         android:inputType="textPassword"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView5" />
+        app:layout_constraintTop_toBottomOf="@+id/userSettingPasswordTV" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/userSettingEmailTV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/harmattan"
-        android:textColor="@color/white"
         android:text="Email"
+        android:textColor="@color/black"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/userSettingRoleSp" />
 
     <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/userSettingPasswordTV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/harmattan"
-        android:textColor="@color/white"
         android:text="Password"
+        android:textColor="@color/black"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/userSettingEmailET" />
@@ -113,8 +113,8 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/harmattan"
-        android:textColor="@color/white"
         android:text="Role"
+        android:textColor="@color/black"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/userSettingNameET" />
@@ -125,7 +125,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView6" />
@@ -151,8 +151,8 @@
         android:layout_marginTop="32dp"
         android:layout_marginEnd="16dp"
         android:backgroundTint="#FF0000"
-        android:text="Delete"
         android:fontFamily="@font/harmattan"
+        android:text="Delete"
         android:textSize="16sp"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
@@ -167,8 +167,8 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
         android:fontFamily="@font/harmattan"
-        android:textColor="@color/white"
         android:text="Choose User"
+        android:textColor="@color/black"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/userSettingTitleTV" />
@@ -179,7 +179,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"

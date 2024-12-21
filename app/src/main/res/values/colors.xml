@@ -4,4 +4,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="status_attended">#50C878</color>
     <color name="status_absent">#D2042D</color>
+    <color name="white_cyan" />
+    <color name="whitecyan">#BDF7FF</color>
+    <color name="cyan">#D5FAFF</color>
 </resources>

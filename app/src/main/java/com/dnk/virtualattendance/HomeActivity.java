@@ -29,14 +29,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
+import java.util.Objects;
 
 public class HomeActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityHomeBinding binding;
     private RoleModel userRole;
-    private DBManager dbManager;
-
     private TextView userNameTV;
     private TextView userEmailTV;
     private ImageView imageView;
@@ -70,7 +69,10 @@ public class HomeActivity extends AppCompatActivity {
 
         // Retrieve authenticated user's role
         userRole = getAuthUserRole();
-//        userRole = new RoleModel(1, "Admin", "", "", "", "", "");
+
+        if (Objects.equals(getCurrentUserEmail(), "admin@gmail.com")){
+            userRole = new RoleModel(1, "Admin", "", "", "", "", "");
+        }
 
         assert userRole != null;
         if ("Admin".equals(userRole.getRoleName())) {

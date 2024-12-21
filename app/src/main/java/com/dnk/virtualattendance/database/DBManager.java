@@ -9,6 +9,7 @@ import android.util.Log;
 import com.dnk.virtualattendance.model.AttendanceModel;
 import com.dnk.virtualattendance.model.RoleModel;
 import com.dnk.virtualattendance.model.UserModel;
+import com.google.firebase.firestore.auth.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -251,6 +252,38 @@ public class DBManager extends DBHelper {
         cursor.close();
         return null;
     }
+    public UserModel getUserByEmail(String email)
+    {
+        String[] columns = new String[]{
+                DBHelper.USER_FIELD_ID,
+                DBHelper.USER_FIELD_NAME,
+                DBHelper.USER_FIELD_EMAIL,
+                DBHelper.USER_FIELD_ROLE
+        };
+
+        Cursor cursor = database.query(
+                DBHelper.TABLE_USER,
+                columns,
+                DBHelper.USER_FIELD_EMAIL + " = ?",
+                new String[]{String.valueOf(email)},
+                null,
+                null,
+                null
+        );
+
+        if (cursor.moveToFirst()) {
+            UserModel user = new UserModel();
+            user.setId(cursor.getInt(0));
+            user.setName(cursor.getString(1));
+            user.setEmail(cursor.getString(2));
+            user.setRole(cursor.getInt(3));
+            cursor.close();
+            return user;
+        }
+
+        cursor.close();
+        return null;
+    }
     public RoleModel getRoleByEmail(String email) {
         RoleModel role = null;
         SQLiteDatabase db = this.dbHelper.getReadableDatabase();
@@ -282,6 +315,9 @@ public class DBManager extends DBHelper {
 
     // === ATTENDANCE OPERATIONS ===
     public AttendanceModel getAttendanceRecord(int userId, String todayDate) {
+        Log.d("Database", "Getting attendance record for user: " + userId);
+        Log.d("Database", "Date: " + todayDate);
+
         AttendanceModel attendanceRecord = null;
         SQLiteDatabase db = this.dbHelper.getReadableDatabase();
         String query = "SELECT * FROM " + DBHelper.TABLE_ATTENDANCE + " WHERE " + DBHelper.ATTENDANCE_FIELD_USER_ID + " = ? AND " + DBHelper.ATTENDANCE_FIELD_DATE + " = ?";
@@ -297,6 +333,8 @@ public class DBManager extends DBHelper {
                     cursor.getString(cursor.getColumnIndexOrThrow(
                             DBHelper.ATTENDANCE_FIELD_END_TIME))
             );
+            Log.d("Database", "Attendance record: " + attendanceRecord.getDate());
+
             cursor.close();
             db.close();
         }
@@ -305,6 +343,8 @@ public class DBManager extends DBHelper {
 
     public void startAttendanceRecord(AttendanceModel attendanceRecord){
         ContentValues values = new ContentValues();
+        Log.d("Database", "Inserting attendance record for user: " + attendanceRecord.getUser_id());
+        Log.d("Database", "Date: " + attendanceRecord.getDate());
         values.put(DBHelper.ATTENDANCE_FIELD_USER_ID, attendanceRecord.getUser_id());
         values.put(DBHelper.ATTENDANCE_FIELD_DATE, attendanceRecord.getDate());
         values.put(DBHelper.ATTENDANCE_FIELD_START_TIME, attendanceRecord.getAttendStartTime());
@@ -323,9 +363,8 @@ public class DBManager extends DBHelper {
     }
   
     public List<AttendanceModel> getAttendanceListForUser(String userId) {
+        Log.d("Database", "Getting attendance for user: " + userId);
         List<AttendanceModel> attendanceList = new ArrayList<>();
-
-        Log.d("Database", "Querying attendance for user: " + userId);
 
         // Query the attendance table based on the user_id
         String[] columns = new String[]{
@@ -340,6 +379,8 @@ public class DBManager extends DBHelper {
                 columns,
                 DBHelper.ATTENDANCE_FIELD_USER_ID + " = ?",
                 new String[]{userId},
+//                null,
+//                null,
                 null,
                 null,
                 DBHelper.ATTENDANCE_FIELD_DATE + " DESC" // Order by most recent
@@ -349,12 +390,13 @@ public class DBManager extends DBHelper {
 
         if (cursor.moveToFirst()) {
             do {
-                int user_id = Integer.parseInt(cursor.getString(1));
-                String date = cursor.getString(2);
-                String checkIn = cursor.getString(4);
-                String checkOut = cursor.getString(5);
+                int user_id = Integer.parseInt(cursor.getString(0));
+                String date = cursor.getString(1);
+                String checkIn = cursor.getString(2);
+                String checkOut = cursor.getString(3);
                 AttendanceModel attendance = new AttendanceModel(user_id, date, checkIn,  checkOut);
                 attendanceList.add(attendance);
+                Log.d("Database", "Attendance: " + attendance.getUser_id());
             } while (cursor.moveToNext());
         }
 
@@ -389,5 +431,9 @@ public class DBManager extends DBHelper {
         }
 
         return attendanceList;
+    }
+
+    public void deleteAllAttendance(){
+        database.delete(DBHelper.TABLE_ATTENDANCE, null, null);
     }
 }

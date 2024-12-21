@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient_background"
+    android:background="@color/cyan"
     tools:context=".ui.rolesetting.RoleSettingFragment">
 
     <TextView
@@ -14,8 +14,8 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
         android:fontFamily="@font/harmattan"
-        android:textColor="@color/white"
         android:text="Add/Edit Role"
+        android:textColor="@color/black"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
@@ -28,8 +28,8 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/harmattan"
-        android:textColor="@color/white"
         android:text="Role Name"
+        android:textColor="@color/black"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/roleSettingRoleSp" />
@@ -41,8 +41,8 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/harmattan"
-        android:textColor="@color/white"
         android:text="Working Time"
+        android:textColor="@color/black"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/roleSettingNameSp" />
@@ -54,8 +54,8 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/harmattan"
-        android:textColor="@color/white"
         android:text="Work Location"
+        android:textColor="@color/black"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/roleSettingStartTimeTP" />
@@ -67,8 +67,8 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/harmattan"
-        android:textColor="@color/white"
         android:text="Salary"
+        android:textColor="@color/black"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/roleSettingLocationET" />
@@ -94,10 +94,10 @@
         android:layout_marginTop="32dp"
         android:layout_marginEnd="16dp"
         android:backgroundTint="#FF0000"
-        android:text="Delete"
-        android:textSize="16sp"
         android:fontFamily="@font/harmattan"
+        android:text="Delete"
         android:textColor="@color/white"
+        android:textSize="16sp"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -113,8 +113,8 @@
         android:fontFamily="@font/harmattan"
         android:hint="00:00"
         android:inputType="time"
-        android:textColor="@color/white"
-        app:layout_constraintStart_toEndOf="@+id/textView4"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toEndOf="@+id/userSettingEmailTV"
         app:layout_constraintTop_toBottomOf="@+id/textView10" />
 
     <EditText
@@ -126,7 +126,7 @@
         android:fontFamily="@font/harmattan"
         android:hint="00:00"
         android:inputType="time"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView10" />
 
@@ -140,7 +140,7 @@
         android:fontFamily="@font/harmattan"
         android:hint="Enter the Salary here"
         android:inputType="numberDecimal"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView12" />
@@ -155,19 +155,19 @@
         android:fontFamily="@font/harmattan"
         android:hint="Enter the Role Name here"
         android:inputType="text"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/userSettingEmailTV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:text="to"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         app:layout_constraintStart_toEndOf="@+id/roleSettingStartTimeTP"
         app:layout_constraintTop_toBottomOf="@+id/textView10" />
 
@@ -182,20 +182,20 @@
         android:hint="Enter the Work Location here"
         android:inputType="text"
         android:text="Name"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView11" />
 
     <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/userSettingPasswordTV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/harmattan"
         android:text="Spare"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         android:textSize="24sp"
         app:layout_constraintStart_toEndOf="@+id/roleSettingEndTimeTP"
         app:layout_constraintTop_toBottomOf="@+id/roleSettingNameSp" />
@@ -209,9 +209,9 @@
         android:fontFamily="@font/harmattan"
         android:hint="00:30"
         android:inputType="time"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         app:layout_constraintStart_toEndOf="@+id/roleSettingEndTimeTP"
-        app:layout_constraintTop_toBottomOf="@+id/textView5" />
+        app:layout_constraintTop_toBottomOf="@+id/userSettingPasswordTV" />
 
     <TextView
         android:id="@+id/textView6"
@@ -220,8 +220,8 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
         android:fontFamily="@font/harmattan"
-        android:textColor="@color/white"
         android:text="Choose Role"
+        android:textColor="@color/black"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/roleSettingTitleTV" />
@@ -232,7 +232,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView6" />
