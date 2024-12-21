@@ -24,6 +24,9 @@ import com.dnk.virtualattendance.database.DBHelper;
 import com.dnk.virtualattendance.database.DBManager;
 import com.dnk.virtualattendance.databinding.FragmentAttendanceSummaryBinding;
 import com.dnk.virtualattendance.model.AttendanceModel;
+import com.dnk.virtualattendance.model.UserModel;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.DayViewDecorator;
 import com.prolificinteractive.materialcalendarview.DayViewFacade;
@@ -57,6 +60,8 @@ public class AttendanceSummaryFragment extends Fragment {
         AttendanceSummaryViewModel attendanceSummaryViewModel =
                 new ViewModelProvider(this).get(AttendanceSummaryViewModel.class);
 
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
         binding = FragmentAttendanceSummaryBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
@@ -68,9 +73,12 @@ public class AttendanceSummaryFragment extends Fragment {
 
         dbManager = new DBManager(getContext());
         dbManager.open();
-        dbManager.insertDummyData();
-        attendanceList = dbManager.getAttendanceListForUser("3");
-        Log.d("AttendanceListSize", Integer.toString(attendanceList.size()));
+        UserModel currentUser = dbManager.getUserByEmail(user.getEmail());
+        String userId = String.valueOf(currentUser.getId());
+        Log.d("UserId", userId);
+        attendanceList = dbManager.getAttendanceListForUser(userId);
+        Log.d("AttendanceList", attendanceList.toString());
+
         setupRecyclerView();
         MaterialCalendarView materialCalendarView = binding.calendarView;
 

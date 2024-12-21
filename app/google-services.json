@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "608754148541",
+    "project_id": "virtual-attendance-de89f",
+    "storage_bucket": "virtual-attendance-de89f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:608754148541:android:dd98f1038578335d8b83d4",
+        "android_client_info": {
+          "package_name": "com.dnk.virtualattendance"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAnHjLXtxJsI_2i6aeyk-E2VjbTEOqW6yw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -31,7 +31,10 @@ import com.dnk.virtualattendance.database.DBManager;
 import com.dnk.virtualattendance.databinding.FragmentAttendanceMachineBinding;
 import com.dnk.virtualattendance.model.AttendanceModel;
 import com.dnk.virtualattendance.model.RoleModel;
+import com.dnk.virtualattendance.model.UserModel;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import org.json.JSONObject;
 
@@ -55,6 +58,7 @@ public class AttendanceMachineFragment extends Fragment {
     private Handler handler = new Handler();
     private Runnable timeUpdater;
     private RoleModel userRole;
+    private UserModel currentUser;
     private ExecutorService executorService;
     private TextView atmachineStatusTV;
     private DBManager dbManager;
@@ -92,6 +96,12 @@ public class AttendanceMachineFragment extends Fragment {
             userRole = activity.getUserRole();
             Log.d("UserRoleFragment", "User Role: " + userRole.getRoleName());
         }
+
+        dbManager = new DBManager(getContext());
+        dbManager.open();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        currentUser = dbManager.getUserByEmail(user.getEmail());
+        dbManager.close();
 
         timeCounterTextView = binding.atmachineTimeCounterTV; // Link to your TextView in XML
         startRealTimeCounter();
@@ -355,6 +365,7 @@ public class AttendanceMachineFragment extends Fragment {
             checkAttendanceRecord(new AttendanceCheckCallback() {
                 @Override
                 public void onAttendanceChecked(boolean isAttendanceRecordExists, AttendanceModel record) {
+
                     if (!isAttendanceRecordExists) {
                         insertAttendStartTime();
                     } else {
@@ -377,7 +388,8 @@ public class AttendanceMachineFragment extends Fragment {
     }
     private void checkAttendanceRecord(AttendanceCheckCallback callback) {
         String todayDate = getCurrentDate();
-        int userId = userRole.getId();
+        int userId = currentUser.getId();
+        todayDate = "2024-12-22";
 
         dbManager = new DBManager(getContext());
         dbManager.open();
@@ -392,8 +404,9 @@ public class AttendanceMachineFragment extends Fragment {
     }
     private void insertAttendStartTime() {
         String currentTime = getCurrentTime();
-        int userId = userRole.getId();
+        int userId = currentUser.getId();
         String todayDate = getCurrentDate();
+        todayDate = "2024-12-22";
 
         if (isWithinSpareTime(currentTime, userRole.getWorkingStartTime(), userRole.getWorkingSpareTime())) {
 
@@ -411,8 +424,9 @@ public class AttendanceMachineFragment extends Fragment {
     }
     private void insertAttendCloseTime(AttendanceModel record) {
         String currentTime = getCurrentTime();
-        int userId = userRole.getId();
+        int userId = currentUser.getId();
         String todayDate = getCurrentDate();
+        todayDate = "2024-12-22";
 
         if (isWithinSpareTime(currentTime, userRole.getWorkingEndTime(), userRole.getWorkingSpareTime())) {
 

@@ -107,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d("MainActivityCalling", "onResume called");
 
         // Check if user is authenticated
         if (isUserAuthenticated()) {

@@ -38,6 +38,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,10 +90,13 @@ public class UserSettingFragment extends Fragment {
                 EditText userSettingNameET = binding.userSettingNameET;
                 EditText userSettingEmailET = binding.userSettingEmailET;
                 EditText userSettingPasswordET = binding.userSettingPasswordET;
+                TextView userSettingEmailTV = binding.userSettingEmailTV;
+                TextView userSettingPasswordTV = binding.userSettingPasswordTV;
 
                 if (selectedUser.getId() != -1) {
                     // Autofill the Name and Role
                     userSettingNameET.setText(selectedUser.getName());
+                    userSettingEmailET.setText(selectedUser.getEmail());
 
                     RoleModel selectedRole = null;
                     for (RoleModel role: roleList) {
@@ -111,20 +116,21 @@ public class UserSettingFragment extends Fragment {
                     }
 
                     // Empty email and password for security
-                    userSettingEmailET.setText("");
-                    userSettingPasswordET.setText("");
+                    userSettingEmailET.setVisibility(View.GONE);
+                    userSettingPasswordET.setVisibility(View.GONE);
+                    userSettingEmailTV.setVisibility(View.GONE);
+                    userSettingPasswordTV.setVisibility(View.GONE);
+                    userSettingDeleteBtn.setVisibility(View.VISIBLE);
                 } else {
                     // Clear fields for new user creation
+                    userSettingEmailTV.setVisibility(View.VISIBLE);
+                    userSettingPasswordTV.setVisibility(View.VISIBLE);
+                    userSettingEmailET.setVisibility(View.VISIBLE);
+                    userSettingPasswordET.setVisibility(View.VISIBLE);
                     userSettingNameET.setText("");
                     userSettingEmailET.setText("");
                     userSettingPasswordET.setText("");
-                }
-
-                // Display delete button
-                if (i != 0) {  // Assuming position 0 is the default or empty state
-                    userSettingDeleteBtn.setVisibility(View.VISIBLE);  // Show the delete button
-                } else {
-                    userSettingDeleteBtn.setVisibility(View.GONE);  // Hide the delete button
+                    userSettingDeleteBtn.setVisibility(View.GONE);
                 }
             }
 
