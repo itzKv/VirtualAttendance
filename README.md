@@ -47,7 +47,7 @@ Virtual Attendance is an application designed for small businesses to efficientl
 
 - Clone the repository:
   ```
-  git clone https://github.com/your-repo/virtual-attendance.git
+  https://github.com/DLiech/VirtualAttendance.git
   ```
 - Open the project in Android Studio.
 
