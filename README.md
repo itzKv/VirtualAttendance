@@ -37,12 +37,9 @@ Virtual Attendance is an application designed for small businesses to efficientl
 - Android Studio (Ladybug)
 
 - Firebase Account & Project
-
-- Device with Fingerprint Sensor (for testing)
-
-- Emulator
-
+- Physical Smartphone with Fingerprint support for best experience
 - [Optional] Physical Device with android version > 10
+  
 #### Installation
 
 - Clone the repository:
@@ -57,9 +54,20 @@ Virtual Attendance is an application designed for small businesses to efficientl
 
 - Please use this credential for first time Login:
   ```
-  Admin@gmail.com
+  admin@gmail.com
   Testing123
   ```
+
+## 🙏 Notes:
+  - Make role Admin and map a user to the role for accessing Admin menu (apart from default account admin@gmail.com)
+  - Any other role than Admin will be considered as staff-like role that have attendance feature
+  - Attendance Button must be clicked twice for the first time to active the fingerprint feature and to read fingerprint
+  - Device Location detected with GPS. Make sure you are in a place with a good signal like open spaces.
+  - Last tested by DLiech at 15 Jan 2025 (master branch)
+
+## 👀👀 Error Potential:
+  - When logging in with wrong credentials, the app will crash. Please make new user or upgrade database version in DBHelper.java
+  - When taking absence, fingerprint validation will popup and may be crashed in Android Studio emulator. Hence, please use device like smartphones that support fingerprints as emulator.
 
 ### Contributors:
 <table>
